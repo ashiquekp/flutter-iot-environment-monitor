@@ -1,0 +1,10 @@
+# Ignore dependency directories
+node_modules/
+
+# Ignore environment variable files containing sensitive keys
+.env
+
+# Ignore OS-specific system files
+.DS_Store
+Thumbs.db
+esp32_firmware\config.h
