@@ -7,4 +7,4 @@ node_modules/
 # Ignore OS-specific system files
 .DS_Store
 Thumbs.db
-esp32_firmware\config.h
+esp32_firmware/config.h
