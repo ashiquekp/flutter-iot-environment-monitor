@@ -18,3 +18,9 @@
 Day 1:
 - ESP32-C3 setup completed
 - Serial communication verified
+
+Day 2:
+- DHT11 integration
+- Sensor abstraction layer
+- Data validation
+- Serial monitoring
