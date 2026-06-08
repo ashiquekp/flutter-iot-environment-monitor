@@ -30,3 +30,76 @@ Day 3:
 - WiFi connectivity
 - Automatic reconnection
 - Configuration management
+
+Day 4:
+- MQTT Broker Integration
+- MQTT Reconnection Handling
+- JSON Payload Publishing
+- Modular MQTT Manager
+- Professional Topic Structure
+- Non-blocking Scheduling using millis()
+
+## Architecture
+
+```text
+DHT11 Sensor
+     │
+     ▼
+ESP32-C3
+     │
+     │ MQTT
+     ▼
+HiveMQ Broker
+     │
+     ▼
+Flutter Application
+```
+
+### Firmware Modules
+
+```text
+esp32_firmware/
+
+├── esp32_firmware.ino
+├── config.h
+├── sensor_manager.h
+├── sensor_manager.cpp
+├── wifi_manager.h
+├── wifi_manager.cpp
+├── mqtt_manager.h
+└── mqtt_manager.cpp
+```
+
+### Communication Flow
+
+1. DHT11 measures temperature and humidity.
+2. ESP32 reads sensor data.
+3. Data is converted into JSON.
+4. JSON is published to MQTT.
+5. Flutter subscribes to MQTT topics.
+6. Dashboard updates in real time.
+
+## Technical Skills Demonstrated
+
+### Embedded Systems
+
+* ESP32-C3 Firmware Development
+* Sensor Integration
+* GPIO Communication
+* Modular Firmware Architecture
+
+### Networking
+
+* WiFi Connectivity
+* MQTT Protocol
+* Publish-Subscribe Architecture
+* Automatic Reconnection
+
+### Software Engineering
+
+* Separation of Concerns
+* Configuration Management
+* Structured JSON Messaging
+* Git-based Development Workflow
+
+
