@@ -20,7 +20,7 @@ void loop() {
     Serial.print(data.humidity);
     Serial.println(" %");
 
-    Serial.println("----------------");
+    Serial.println("----------------"); 
   } else {
     Serial.println("Failed to read DHT11");
   }
