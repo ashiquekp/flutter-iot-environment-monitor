@@ -24,3 +24,9 @@ Day 2:
 - Sensor abstraction layer
 - Data validation
 - Serial monitoring
+
+Day 3:
+- WiFi Manager module
+- WiFi connectivity
+- Automatic reconnection
+- Configuration management
