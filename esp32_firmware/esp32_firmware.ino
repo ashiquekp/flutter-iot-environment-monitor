@@ -1,29 +1,28 @@
 #include "sensor_manager.h"
+#include "wifi_manager.h"
 
 void setup() {
   Serial.begin(115200);
 
   initSensor();
 
-  Serial.println("Sensor initialized");
+  initWiFi();
 }
 
 void loop() {
+  handleWiFi();
+
   SensorData data = readSensor();
 
   if (data.isValid) {
     Serial.print("Temperature: ");
-    Serial.print(data.temperature);
-    Serial.println(" °C");
+    Serial.println(data.temperature);
 
     Serial.print("Humidity: ");
-    Serial.print(data.humidity);
-    Serial.println(" %");
-
-    Serial.println("----------------");
-  } else {
-    Serial.println("Failed to read DHT11");
+    Serial.println(data.humidity);
   }
 
-  delay(2000);
+  Serial.println("----------------");
+
+  delay(5000);
 }
