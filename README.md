@@ -1,5 +1,34 @@
 # Flutter IoT Environment Monitor
 
+# EnviroMonitor
+
+A Flutter + ESP32 IoT monitoring platform built using MQTT and Riverpod.
+
+The system collects environmental data from an ESP32-C3 connected to a DHT11 sensor and streams telemetry to a Flutter dashboard through MQTT.
+
+### Technologies
+
+Firmware:
+- ESP32-C3
+- Arduino IDE
+- DHT11
+- MQTT
+- WiFi
+
+Mobile:
+- Flutter
+- Riverpod
+- MQTT Client
+
+Communication:
+- MQTT
+- JSON
+
+Architecture:
+- Modular Firmware Design
+- Service-Based Flutter Architecture
+- Real-Time Telemetry Pipeline
+
 ## Hardware
 
 - Seeed Studio XIAO ESP32C3
@@ -38,6 +67,21 @@ Day 4:
 - Modular MQTT Manager
 - Professional Topic Structure
 - Non-blocking Scheduling using millis()
+
+Day 5:
+- MQTT Client Integration
+- Riverpod State Management
+- Real-Time Telemetry Updates
+- JSON Payload Parsing
+- Sensor Data Modeling
+- Device Monitoring Dashboard
+
+Day 6:
+- Reusable dashboard widgets
+- Last Updated tracking
+- Date formatting utilities
+- Dashboard UI refactoring
+- Connection state modeling
 
 ## Architecture
 
