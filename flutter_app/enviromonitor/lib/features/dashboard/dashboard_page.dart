@@ -4,151 +4,88 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../providers/history_provider.dart';
 import '../../../providers/mqtt_provider.dart';
+import 'widgets/humidity_chart.dart';
 import 'widgets/info_card.dart';
+import 'widgets/temperature_chart.dart';
 
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
 
   @override
-  Widget build(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
-    final mqttAsync =
-        ref.watch(mqttServiceProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mqttAsync = ref.watch(mqttServiceProvider);
 
-    final history =
-        ref.watch(historyProvider);
+    final history = ref.watch(historyProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'EnviroMonitor',
-        ),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('EnviroMonitor'), centerTitle: true),
       body: mqttAsync.when(
         data: (mqttService) {
           return StreamBuilder(
             stream: mqttService.stream,
-            builder: (
-              context,
-              snapshot,
-            ) {
+            builder: (context, snapshot) {
               if (snapshot.hasData) {
-                WidgetsBinding.instance
-                    .addPostFrameCallback(
-                  (_) {
-                    ref
-                        .read(
-                          historyProvider
-                              .notifier,
-                        )
-                        .addReading(
-                          snapshot.data!,
-                        );
-                  },
-                );
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  ref.read(historyProvider.notifier).addReading(snapshot.data!);
+                });
               }
 
               if (history.isEmpty) {
-                return const Center(
-                  child:
-                      CircularProgressIndicator(),
-                );
+                return const Center(child: CircularProgressIndicator());
               }
 
-              final latest =
-                  history.first;
+              final latest = history.first;
 
               return RefreshIndicator(
                 onRefresh: () async {},
                 child: ListView(
-                  padding:
-                      const EdgeInsets.all(
-                    16,
-                  ),
+                  padding: const EdgeInsets.all(16),
                   children: [
+                    InfoCard(title: 'Device ID', value: latest.deviceId),
                     InfoCard(
-                      title: 'Device ID',
-                      value:
-                          latest.deviceId,
-                    ),
-                    InfoCard(
-                      title:
-                          'Temperature',
-                      value:
-                          '${latest.temperature.toStringAsFixed(1)} °C',
+                      title: 'Temperature',
+                      value: '${latest.temperature.toStringAsFixed(1)} °C',
                     ),
                     InfoCard(
-                      title:
-                          'Humidity',
-                      value:
-                          '${latest.humidity.toStringAsFixed(1)} %',
+                      title: 'Humidity',
+                      value: '${latest.humidity.toStringAsFixed(1)} %',
                     ),
-                    const InfoCard(
-                      title:
-                          'MQTT Status',
-                      value:
-                          'Connected',
-                    ),
+                    const InfoCard(title: 'MQTT Status', value: 'Connected'),
                     InfoCard(
-                      title:
-                          'Last Updated',
-                      value: formatTime(
-                        latest.receivedAt,
-                      ),
+                      title: 'Last Updated',
+                      value: formatTime(latest.receivedAt),
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    const SizedBox(height: 24),
+
                     const Text(
-                      'Recent Readings',
+                      'Temperature Trend',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight:
-                            FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    ...history.map(
-                      (reading) => Card(
-                        child: ListTile(
-                          title: Text(
-                            '${reading.temperature.toStringAsFixed(1)} °C',
-                          ),
-                          subtitle: Text(
-                            '${reading.humidity.toStringAsFixed(1)} %',
-                          ),
-                          trailing: Text(
-                            formatTime(
-                              reading
-                                  .receivedAt,
-                            ),
-                          ),
-                        ),
+
+                    TemperatureChart(history: history.reversed.toList()),
+
+                    const SizedBox(height: 24),
+
+                    const Text(
+                      'Humidity Trend',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+
+                    HumidityChart(history: history.reversed.toList()),
                   ],
                 ),
               );
             },
           );
         },
-        error:
-            (error, stackTrace) =>
-                Center(
-          child: Text(
-            error.toString(),
-          ),
-        ),
-        loading:
-            () => const Center(
-          child:
-              CircularProgressIndicator(),
-        ),
+        error: (error, stackTrace) => Center(child: Text(error.toString())),
+        loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );
   }
