@@ -1,4 +1,4 @@
-enum ConnectionStateType {
+enum MqttConnectionStatus {
   connected,
   disconnected,
 }
