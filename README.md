@@ -90,6 +90,13 @@ Day 7:
 - Recent Reading List
 - Trend Visualization Foundation
 
+Day 8:
+- Temperature Trend Chart
+- Humidity Trend Chart
+- Historical Telemetry Visualization
+- Time-Series Data Processing
+- Reusable Chart Widgets
+
 ## Architecture
 
 ```text
