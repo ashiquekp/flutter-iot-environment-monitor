@@ -1,0 +1,4 @@
+enum ConnectionStateType {
+  connected,
+  disconnected,
+}
