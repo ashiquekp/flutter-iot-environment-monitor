@@ -97,6 +97,13 @@ Day 8:
 - Time-Series Data Processing
 - Reusable Chart Widgets
 
+Day 9:
+- Alert Engine
+- Temperature Threshold Monitoring
+- Humidity Threshold Monitoring
+- Warning Generation
+- Alert Dashboard Integration
+
 ## Architecture
 
 ```text
