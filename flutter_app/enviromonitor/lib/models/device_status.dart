@@ -1,0 +1,4 @@
+enum DeviceStatus {
+  online,
+  offline,
+}
