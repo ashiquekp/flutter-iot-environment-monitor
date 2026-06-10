@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/date_formatter.dart';
+import '../../../providers/alert_provider.dart';
 import '../../../providers/history_provider.dart';
 import '../../../providers/mqtt_provider.dart';
 import 'widgets/humidity_chart.dart';
@@ -17,6 +18,8 @@ class DashboardPage extends ConsumerWidget {
 
     final history = ref.watch(historyProvider);
 
+    final alerts = ref.watch(alertProvider);
+
     return Scaffold(
       appBar: AppBar(title: const Text('EnviroMonitor'), centerTitle: true),
       body: mqttAsync.when(
@@ -25,8 +28,12 @@ class DashboardPage extends ConsumerWidget {
             stream: mqttService.stream,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
+                final reading = snapshot.data!;
+
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  ref.read(historyProvider.notifier).addReading(snapshot.data!);
+                  ref.read(historyProvider.notifier).addReading(reading);
+
+                  ref.read(alertProvider.notifier).evaluate(reading);
                 });
               }
 
@@ -41,20 +48,37 @@ class DashboardPage extends ConsumerWidget {
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
+                    // Alerts Section
+                    if (alerts.isNotEmpty)
+                      ...alerts.map(
+                        (alert) => Card(
+                          child: ListTile(
+                            leading: const Icon(Icons.warning),
+                            title: Text(alert.title),
+                            subtitle: Text(alert.message),
+                          ),
+                        ),
+                      ),
+
                     InfoCard(title: 'Device ID', value: latest.deviceId),
+
                     InfoCard(
                       title: 'Temperature',
                       value: '${latest.temperature.toStringAsFixed(1)} °C',
                     ),
+
                     InfoCard(
                       title: 'Humidity',
                       value: '${latest.humidity.toStringAsFixed(1)} %',
                     ),
+
                     const InfoCard(title: 'MQTT Status', value: 'Connected'),
+
                     InfoCard(
                       title: 'Last Updated',
                       value: formatTime(latest.receivedAt),
                     ),
+
                     const SizedBox(height: 24),
 
                     const Text(
@@ -78,14 +102,40 @@ class DashboardPage extends ConsumerWidget {
                     ),
 
                     HumidityChart(history: history.reversed.toList()),
+
+                    const SizedBox(height: 24),
+
+                    const Text(
+                      'Recent Readings',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    ...history.map(
+                      (reading) => Card(
+                        child: ListTile(
+                          title: Text(
+                            '${reading.temperature.toStringAsFixed(1)} °C',
+                          ),
+                          subtitle: Text(
+                            '${reading.humidity.toStringAsFixed(1)} %',
+                          ),
+                          trailing: Text(formatTime(reading.receivedAt)),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               );
             },
           );
         },
-        error: (error, stackTrace) => Center(child: Text(error.toString())),
         loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => Center(child: Text(error.toString())),
       ),
     );
   }
