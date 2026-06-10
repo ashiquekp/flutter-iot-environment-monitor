@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/date_formatter.dart';
+import '../../../models/device_status.dart';
 import '../../../providers/alert_provider.dart';
+import '../../../providers/device_status_provider.dart';
 import '../../../providers/history_provider.dart';
+import '../../../providers/last_telemetry_provider.dart';
 import '../../../providers/mqtt_provider.dart';
 import 'widgets/humidity_chart.dart';
 import 'widgets/info_card.dart';
@@ -20,6 +23,22 @@ class DashboardPage extends ConsumerWidget {
 
     final alerts = ref.watch(alertProvider);
 
+    final deviceStatus = ref.watch(deviceStatusProvider);
+
+    final lastTelemetry = ref.watch(lastTelemetryProvider);
+
+    if (lastTelemetry != null) {
+      final secondsSinceLastUpdate = DateTime.now()
+          .difference(lastTelemetry)
+          .inSeconds;
+
+      if (secondsSinceLastUpdate > 15) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref.read(deviceStatusProvider.notifier).markOffline();
+        });
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('EnviroMonitor'), centerTitle: true),
       body: mqttAsync.when(
@@ -34,6 +53,11 @@ class DashboardPage extends ConsumerWidget {
                   ref.read(historyProvider.notifier).addReading(reading);
 
                   ref.read(alertProvider.notifier).evaluate(reading);
+
+                  ref.read(deviceStatusProvider.notifier).markOnline();
+
+                  ref.read(lastTelemetryProvider.notifier).state =
+                      DateTime.now();
                 });
               }
 
@@ -48,7 +72,6 @@ class DashboardPage extends ConsumerWidget {
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
-                    // Alerts Section
                     if (alerts.isNotEmpty)
                       ...alerts.map(
                         (alert) => Card(
@@ -61,6 +84,13 @@ class DashboardPage extends ConsumerWidget {
                       ),
 
                     InfoCard(title: 'Device ID', value: latest.deviceId),
+
+                    InfoCard(
+                      title: 'Device Status',
+                      value: deviceStatus == DeviceStatus.online
+                          ? '🟢 Online'
+                          : '🔴 Offline',
+                    ),
 
                     InfoCard(
                       title: 'Temperature',
