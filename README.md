@@ -110,6 +110,13 @@ Day 10:
 - Last Telemetry Tracking
 - Device Health Monitoring
 
+Day 11:
+- Dedicated Device Status Topic
+- Status Message Parsing
+- Telemetry Controller
+- Separation of Business Logic from UI
+- Improved MQTT Architecture
+
 ## Architecture
 
 ```text
