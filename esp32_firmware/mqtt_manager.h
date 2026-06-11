@@ -3,6 +3,7 @@
 
 void initMQTT();
 void handleMQTT();
+void publishDeviceStatus();
 
 void publishSensorData(
   float temperature,

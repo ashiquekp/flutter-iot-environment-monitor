@@ -45,6 +45,8 @@ void loop() {
         data.temperature,
         data.humidity
       );
+
+    publishDeviceStatus();
     } else {
 
       Serial.println(

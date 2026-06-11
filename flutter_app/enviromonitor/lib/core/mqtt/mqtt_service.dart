@@ -1,24 +1,30 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
+import '../../models/device_status_message.dart';
 import '../../models/sensor_reading.dart';
 
 class MqttService {
-  static const broker = 'broker.hivemq.com';
+  static const String broker = 'broker.hivemq.com';
 
-  static const topic =
-      'home/lab/device1/environment';
+  static const String telemetryTopic = 'home/lab/device1/environment';
 
-  final client = MqttServerClient(
-    broker,
-    'flutter_client',
-  );
+  static const String statusTopic = 'home/lab/device1/status';
 
-  final Stream<SensorReading> stream;
+  final MqttServerClient client;
 
-  MqttService._(this.stream);
+  final Stream<SensorReading> telemetryStream;
+
+  final Stream<DeviceStatusMessage> statusStream;
+
+  MqttService._({
+    required this.client,
+    required this.telemetryStream,
+    required this.statusStream,
+  });
 
   static Future<MqttService> create() async {
     final client = MqttServerClient(
@@ -27,36 +33,51 @@ class MqttService {
     );
 
     client.port = 1883;
-
     client.keepAlivePeriod = 30;
+    client.logging(on: false);
 
     await client.connect();
 
-    client.subscribe(
-      topic,
-      MqttQos.atLeastOnce,
-    );
+    client.subscribe(telemetryTopic, MqttQos.atLeastOnce);
 
-    final stream =
-        client.updates!.map((events) {
-      final payload =
-          events.first.payload
-              as MqttPublishMessage;
+    client.subscribe(statusTopic, MqttQos.atLeastOnce);
 
-      final jsonString =
-          MqttPublishPayload.bytesToStringAsString(
-        payload.payload.message,
-      );
+    final telemetryController = StreamController<SensorReading>.broadcast();
 
-      final jsonMap =
-          jsonDecode(jsonString)
-              as Map<String, dynamic>;
+    final statusController = StreamController<DeviceStatusMessage>.broadcast();
 
-      return SensorReading.fromJson(
-        jsonMap,
-      );
+    client.updates?.listen((events) {
+      for (final event in events) {
+        final publishMessage = event.payload as MqttPublishMessage;
+
+        final payloadString = MqttPublishPayload.bytesToStringAsString(
+          publishMessage.payload.message,
+        );
+
+        final topic = event.topic;
+
+        try {
+          final jsonMap = jsonDecode(payloadString) as Map<String, dynamic>;
+
+          if (topic == telemetryTopic) {
+            telemetryController.add(SensorReading.fromJson(jsonMap));
+          } else if (topic == statusTopic) {
+            statusController.add(DeviceStatusMessage.fromJson(jsonMap));
+          }
+        } catch (e) {
+          print('MQTT Parse Error: $e');
+        }
+      }
     });
 
-    return MqttService._(stream);
+    return MqttService._(
+      client: client,
+      telemetryStream: telemetryController.stream,
+      statusStream: statusController.stream,
+    );
+  }
+
+  Future<void> disconnect() async {
+    client.disconnect();
   }
 }

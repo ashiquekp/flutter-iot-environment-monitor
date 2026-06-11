@@ -48,6 +48,22 @@ void handleMQTT() {
   mqttClient.loop();
 }
 
+void publishDeviceStatus() {
+
+  String payload =
+    "{"
+    "\"deviceId\":\"" +
+    String(DEVICE_ID) +
+    "\","
+    "\"status\":\"online\""
+    "}";
+
+  mqttClient.publish(
+    TOPIC_STATUS,
+    payload.c_str()
+  );
+}
+
 void publishSensorData(
   float temperature,
   float humidity
