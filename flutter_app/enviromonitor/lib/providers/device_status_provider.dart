@@ -3,14 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/device_status.dart';
 
 class DeviceStatusNotifier extends StateNotifier<DeviceStatus> {
-  DeviceStatusNotifier() : super(DeviceStatus.offline);
+  DeviceStatusNotifier() : super(DeviceStatus.unknown);
 
-  void markOnline() {
+  void setOnline() {
     state = DeviceStatus.online;
   }
 
-  void markOffline() {
+  void setOffline() {
     state = DeviceStatus.offline;
+  }
+
+  void setUnknown() {
+    state = DeviceStatus.unknown;
   }
 }
 

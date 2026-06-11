@@ -34,7 +34,7 @@ class DashboardPage extends ConsumerWidget {
 
       if (secondsSinceLastUpdate > 15) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(deviceStatusProvider.notifier).markOffline();
+          ref.read(deviceStatusProvider.notifier).setOffline();
         });
       }
     }
@@ -44,7 +44,7 @@ class DashboardPage extends ConsumerWidget {
       body: mqttAsync.when(
         data: (mqttService) {
           return StreamBuilder(
-            stream: mqttService.stream,
+            stream: mqttService.telemetryStream,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final reading = snapshot.data!;
@@ -54,7 +54,7 @@ class DashboardPage extends ConsumerWidget {
 
                   ref.read(alertProvider.notifier).evaluate(reading);
 
-                  ref.read(deviceStatusProvider.notifier).markOnline();
+                  ref.read(deviceStatusProvider.notifier).setOnline();
 
                   ref.read(lastTelemetryProvider.notifier).state =
                       DateTime.now();
