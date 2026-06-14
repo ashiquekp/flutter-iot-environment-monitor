@@ -117,6 +117,12 @@ Day 11:
 - Separation of Business Logic from UI
 - Improved MQTT Architecture
 
+Day 12:
+- Centralized Telemetry Controller
+- Listener Lifecycle Management
+- Dashboard Simplification
+- Provider Driven UI
+
 ## Architecture
 
 ```text
