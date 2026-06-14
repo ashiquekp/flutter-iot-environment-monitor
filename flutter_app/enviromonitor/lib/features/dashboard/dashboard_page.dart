@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../controllers/telemetry_controller.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../models/device_status.dart';
 import '../../../providers/alert_provider.dart';
 import '../../../providers/device_status_provider.dart';
 import '../../../providers/history_provider.dart';
-import '../../../providers/last_telemetry_provider.dart';
 import '../../../providers/mqtt_provider.dart';
 import 'widgets/humidity_chart.dart';
 import 'widgets/info_card.dart';
@@ -17,6 +17,8 @@ class DashboardPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(telemetryControllerProvider);
+
     final mqttAsync = ref.watch(mqttServiceProvider);
 
     final history = ref.watch(historyProvider);
@@ -25,20 +27,6 @@ class DashboardPage extends ConsumerWidget {
 
     final deviceStatus = ref.watch(deviceStatusProvider);
 
-    final lastTelemetry = ref.watch(lastTelemetryProvider);
-
-    if (lastTelemetry != null) {
-      final secondsSinceLastUpdate = DateTime.now()
-          .difference(lastTelemetry)
-          .inSeconds;
-
-      if (secondsSinceLastUpdate > 15) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(deviceStatusProvider.notifier).setOffline();
-        });
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(title: const Text('EnviroMonitor'), centerTitle: true),
       body: mqttAsync.when(
@@ -46,23 +34,8 @@ class DashboardPage extends ConsumerWidget {
           return StreamBuilder(
             stream: mqttService.telemetryStream,
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final reading = snapshot.data!;
-
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  ref.read(historyProvider.notifier).addReading(reading);
-
-                  ref.read(alertProvider.notifier).evaluate(reading);
-
-                  ref.read(deviceStatusProvider.notifier).setOnline();
-
-                  ref.read(lastTelemetryProvider.notifier).state =
-                      DateTime.now();
-                });
-              }
-
               if (history.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: Text('Waiting for telemetry...'));
               }
 
               final latest = history.first;
@@ -87,9 +60,13 @@ class DashboardPage extends ConsumerWidget {
 
                     InfoCard(
                       title: 'Device Status',
-                      value: deviceStatus == DeviceStatus.online
-                          ? '🟢 Online'
-                          : '🔴 Offline',
+                      value: switch (deviceStatus) {
+                        DeviceStatus.online => '🟢 Online',
+
+                        DeviceStatus.offline => '🔴 Offline',
+
+                        DeviceStatus.unknown => '⚪ Unknown',
+                      },
                     ),
 
                     InfoCard(
