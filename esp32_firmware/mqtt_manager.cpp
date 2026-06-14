@@ -9,6 +9,7 @@ WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 
 void reconnectMQTT() {
+
   while (!mqttClient.connected()) {
 
     Serial.print("Connecting to MQTT...");
@@ -18,14 +19,36 @@ void reconnectMQTT() {
       "-" +
       String(random(1000, 9999));
 
-    if (mqttClient.connect(clientId.c_str())) {
+    String offlinePayload =
+      "{"
+      "\"deviceId\":\"" +
+      String(DEVICE_ID) +
+      "\","
+      "\"status\":\"offline\""
+      "}";
+
+    if (
+      mqttClient.connect(
+        clientId.c_str(),
+        nullptr,
+        nullptr,
+        TOPIC_STATUS,
+        0,
+        true,
+        offlinePayload.c_str()
+      )
+    ) {
 
       Serial.println(" Connected");
+
+      publishDeviceStatus();
 
     } else {
 
       Serial.print(" Failed. State=");
-      Serial.println(mqttClient.state());
+      Serial.println(
+        mqttClient.state()
+      );
 
       delay(2000);
     }
