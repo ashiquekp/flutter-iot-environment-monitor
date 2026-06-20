@@ -123,6 +123,12 @@ Day 12:
 - Dashboard Simplification
 - Provider Driven UI
 
+Day 13:
+- MQTT Command Topic
+- Device Control from Flutter
+- Bidirectional MQTT Communication
+- Remote LED Control
+
 ## Architecture
 
 ```text
