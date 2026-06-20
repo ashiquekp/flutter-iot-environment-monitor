@@ -1,6 +1,7 @@
 #include "sensor_manager.h"
 #include "wifi_manager.h"
 #include "mqtt_manager.h"
+#include "config.h"
 
 unsigned long lastPublishTime = 0;
 
@@ -8,13 +9,25 @@ void setup() {
 
   Serial.begin(115200);
 
+  pinMode(
+    ALERT_LED_PIN,
+    OUTPUT
+  );
+
+  digitalWrite(
+    ALERT_LED_PIN,
+    LOW
+  );
+
   initSensor();
 
   initWiFi();
 
   initMQTT();
 
-  Serial.println("System Ready");
+  Serial.println(
+    "System Ready"
+  );
 }
 
 void loop() {
@@ -23,30 +36,32 @@ void loop() {
 
   handleMQTT();
 
-  unsigned long currentTime = millis();
+  unsigned long currentTime =
+    millis();
 
   if (
-    currentTime - lastPublishTime >= 5000
+    currentTime -
+      lastPublishTime >=
+    5000
   ) {
 
-    lastPublishTime = currentTime;
+    lastPublishTime =
+      currentTime;
 
-    SensorData data = readSensor();
+    SensorData data =
+      readSensor();
 
-    if (data.isValid) {
-
-      Serial.print("Temperature: ");
-      Serial.println(data.temperature);
-
-      Serial.print("Humidity: ");
-      Serial.println(data.humidity);
+    if (
+      data.isValid
+    ) {
 
       publishSensorData(
         data.temperature,
         data.humidity
       );
 
-    publishDeviceStatus();
+      publishDeviceStatus();
+
     } else {
 
       Serial.println(
