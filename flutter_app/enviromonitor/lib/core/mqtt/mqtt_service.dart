@@ -14,6 +14,8 @@ class MqttService {
 
   static const String statusTopic = 'home/lab/device1/status';
 
+  static const String commandTopic = 'home/lab/device1/commands';
+
   final MqttServerClient client;
 
   final Stream<SensorReading> telemetryStream;
@@ -75,6 +77,24 @@ class MqttService {
       telemetryStream: telemetryController.stream,
       statusStream: statusController.stream,
     );
+  }
+
+  void turnLedOn() {
+    _publishCommand('led_on');
+  }
+
+  void turnLedOff() {
+    _publishCommand('led_off');
+  }
+
+  void _publishCommand(String command) {
+    final payload = jsonEncode({'command': command});
+
+    final builder = MqttClientPayloadBuilder();
+
+    builder.addString(payload);
+
+    client.publishMessage(commandTopic, MqttQos.atLeastOnce, builder.payload!);
   }
 
   Future<void> disconnect() async {
