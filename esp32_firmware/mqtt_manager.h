@@ -2,7 +2,9 @@
 #define MQTT_MANAGER_H
 
 void initMQTT();
+
 void handleMQTT();
+
 void publishDeviceStatus();
 
 void publishSensorData(

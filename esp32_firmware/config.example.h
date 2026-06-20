@@ -15,4 +15,9 @@ constexpr const char* TOPIC_ENVIRONMENT =
 constexpr const char* TOPIC_STATUS =
   "home/lab/device1/status";
 
+constexpr const char* TOPIC_COMMANDS =
+  "home/lab/device1/commands";
+
+constexpr int ALERT_LED_PIN = D2;
+
 #endif

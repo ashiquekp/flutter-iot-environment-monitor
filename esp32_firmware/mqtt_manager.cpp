@@ -8,16 +8,78 @@
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 
+void mqttCallback(
+  char* topic,
+  byte* payload,
+  unsigned int length
+) {
+
+  String message;
+
+  for (
+    unsigned int i = 0;
+    i < length;
+    i++
+  ) {
+    message += (char)payload[i];
+  }
+
+  Serial.println(
+    "Command Received:"
+  );
+
+  Serial.println(message);
+
+  if (
+    message.indexOf(
+      "led_on"
+    ) >= 0
+  ) {
+
+    digitalWrite(
+      ALERT_LED_PIN,
+      HIGH
+    );
+
+    Serial.println(
+      "LED ON"
+    );
+  }
+
+  else if (
+    message.indexOf(
+      "led_off"
+    ) >= 0
+  ) {
+
+    digitalWrite(
+      ALERT_LED_PIN,
+      LOW
+    );
+
+    Serial.println(
+      "LED OFF"
+    );
+  }
+}
+
 void reconnectMQTT() {
 
   while (!mqttClient.connected()) {
 
-    Serial.print("Connecting to MQTT...");
+    Serial.print(
+      "Connecting to MQTT..."
+    );
 
     String clientId =
       String(DEVICE_ID) +
       "-" +
-      String(random(1000, 9999));
+      String(
+        random(
+          1000,
+          9999
+        )
+      );
 
     String offlinePayload =
       "{"
@@ -39,13 +101,22 @@ void reconnectMQTT() {
       )
     ) {
 
-      Serial.println(" Connected");
+      Serial.println(
+        " Connected"
+      );
+
+      mqttClient.subscribe(
+        TOPIC_COMMANDS
+      );
 
       publishDeviceStatus();
 
     } else {
 
-      Serial.print(" Failed. State=");
+      Serial.print(
+        " Failed. State="
+      );
+
       Serial.println(
         mqttClient.state()
       );
@@ -56,15 +127,22 @@ void reconnectMQTT() {
 }
 
 void initMQTT() {
+
   mqttClient.setServer(
     MQTT_BROKER,
     MQTT_PORT
+  );
+
+  mqttClient.setCallback(
+    mqttCallback
   );
 }
 
 void handleMQTT() {
 
-  if (!mqttClient.connected()) {
+  if (
+    !mqttClient.connected()
+  ) {
     reconnectMQTT();
   }
 
@@ -98,10 +176,16 @@ void publishSensorData(
     String(DEVICE_ID) +
     "\","
     "\"temperature\":" +
-    String(temperature, 2) +
+    String(
+      temperature,
+      2
+    ) +
     ","
     "\"humidity\":" +
-    String(humidity, 2) +
+    String(
+      humidity,
+      2
+    ) +
     "}";
 
   mqttClient.publish(
@@ -109,7 +193,10 @@ void publishSensorData(
     payload.c_str()
   );
 
-  Serial.println("MQTT Published:");
+  Serial.println(
+    "MQTT Published:"
+  );
+
   Serial.println(payload);
 }
 
