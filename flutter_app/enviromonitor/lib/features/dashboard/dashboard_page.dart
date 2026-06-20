@@ -89,6 +89,42 @@ class DashboardPage extends ConsumerWidget {
                     const SizedBox(height: 24),
 
                     const Text(
+                      'LED Control',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              mqttService.turnLedOn();
+                            },
+                            child: const Text('Turn ON'),
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              mqttService.turnLedOff();
+                            },
+                            child: const Text('Turn OFF'),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    const Text(
                       'Temperature Trend',
                       style: TextStyle(
                         fontSize: 18,
