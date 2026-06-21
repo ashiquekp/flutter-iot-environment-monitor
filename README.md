@@ -129,6 +129,12 @@ Day 13:
 - Bidirectional MQTT Communication
 - Remote LED Control
 
+Day 14:
+- SG90 Servo Integration
+- MQTT Servo Commands
+- Flutter Slider Control
+- Real-Time Angle Updates
+
 ## Architecture
 
 ```text
