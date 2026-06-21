@@ -20,4 +20,6 @@ constexpr const char* TOPIC_COMMANDS =
 
 constexpr int ALERT_LED_PIN = D2;
 
+constexpr int SERVO_PIN = D1;
+
 #endif
