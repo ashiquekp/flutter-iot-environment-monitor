@@ -4,6 +4,7 @@
 #include <PubSubClient.h>
 
 #include "config.h"
+#include "servo_manager.h"
 
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
@@ -24,16 +25,11 @@ void mqttCallback(
     message += (char)payload[i];
   }
 
-  Serial.println(
-    "Command Received:"
-  );
-
+  Serial.println("Command Received:");
   Serial.println(message);
 
   if (
-    message.indexOf(
-      "led_on"
-    ) >= 0
+    message.indexOf("led_on") >= 0
   ) {
 
     digitalWrite(
@@ -41,15 +37,11 @@ void mqttCallback(
       HIGH
     );
 
-    Serial.println(
-      "LED ON"
-    );
+    Serial.println("LED ON");
   }
 
   else if (
-    message.indexOf(
-      "led_off"
-    ) >= 0
+    message.indexOf("led_off") >= 0
   ) {
 
     digitalWrite(
@@ -57,9 +49,45 @@ void mqttCallback(
       LOW
     );
 
-    Serial.println(
-      "LED OFF"
-    );
+    Serial.println("LED OFF");
+  }
+
+  else if (
+    message.indexOf("\"command\":\"servo\"") >= 0
+  ) {
+
+    int angleIndex =
+      message.indexOf("\"angle\":");
+
+    if (
+      angleIndex >= 0
+    ) {
+
+      String angleString =
+        message.substring(
+          angleIndex + 8
+        );
+
+      angleString.replace(
+        "}",
+        ""
+      );
+
+      int angle =
+        angleString.toInt();
+
+      setServoAngle(
+        angle
+      );
+
+      Serial.print(
+        "Servo Angle: "
+      );
+
+      Serial.println(
+        angle
+      );
+    }
   }
 }
 
@@ -192,12 +220,6 @@ void publishSensorData(
     TOPIC_ENVIRONMENT,
     payload.c_str()
   );
-
-  Serial.println(
-    "MQTT Published:"
-  );
-
-  Serial.println(payload);
 }
 
 bool isMQTTConnected() {

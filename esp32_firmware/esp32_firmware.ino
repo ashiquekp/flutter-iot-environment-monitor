@@ -1,6 +1,7 @@
 #include "sensor_manager.h"
 #include "wifi_manager.h"
 #include "mqtt_manager.h"
+#include "servo_manager.h"
 #include "config.h"
 
 unsigned long lastPublishTime = 0;
@@ -18,6 +19,8 @@ void setup() {
     ALERT_LED_PIN,
     LOW
   );
+
+  initServo();
 
   initSensor();
 
@@ -61,12 +64,6 @@ void loop() {
       );
 
       publishDeviceStatus();
-
-    } else {
-
-      Serial.println(
-        "Invalid DHT11 reading"
-      );
     }
 
     Serial.println(

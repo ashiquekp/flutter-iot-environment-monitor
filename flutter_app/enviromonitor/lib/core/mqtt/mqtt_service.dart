@@ -87,6 +87,16 @@ class MqttService {
     _publishCommand('led_off');
   }
 
+  void setServoAngle(int angle) {
+    final payload = jsonEncode({'command': 'servo', 'angle': angle});
+
+    final builder = MqttClientPayloadBuilder();
+
+    builder.addString(payload);
+
+    client.publishMessage(commandTopic, MqttQos.atLeastOnce, builder.payload!);
+  }
+
   void _publishCommand(String command) {
     final payload = jsonEncode({'command': command});
 
