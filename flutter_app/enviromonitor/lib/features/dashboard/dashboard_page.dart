@@ -12,11 +12,18 @@ import 'widgets/humidity_chart.dart';
 import 'widgets/info_card.dart';
 import 'widgets/temperature_chart.dart';
 
-class DashboardPage extends ConsumerWidget {
+class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends ConsumerState<DashboardPage> {
+  double servoAngle = 90;
+
+  @override
+  Widget build(BuildContext context) {
     ref.watch(telemetryControllerProvider);
 
     final mqttAsync = ref.watch(mqttServiceProvider);
@@ -120,6 +127,43 @@ class DashboardPage extends ConsumerWidget {
                           ),
                         ),
                       ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    const Text(
+                      'Servo Control',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Center(
+                      child: Text(
+                        '${servoAngle.round()}°',
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
+                    Slider(
+                      value: servoAngle,
+                      min: 0,
+                      max: 180,
+                      divisions: 180,
+                      label: servoAngle.round().toString(),
+                      onChanged: (value) {
+                        setState(() {
+                          servoAngle = value;
+                        });
+
+                        mqttService.setServoAngle(value.round());
+                      },
                     ),
 
                     const SizedBox(height: 24),
