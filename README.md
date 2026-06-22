@@ -143,6 +143,28 @@ Day 15:
 - RGB color preview widget
 - Brightness control
 
+Day 16:
+The Flutter app can trigger predefined IoT scenes through MQTT where available scenes are:
+- ☀️ Day Mode
+  - Servo → 0°
+  - RGB Strip → White
+  - Alert LED → OFF
+
+- 🌙 Night Mode
+  - Servo → 180°
+  - RGB Strip → Orange
+  - Low Brightness
+
+- 🎬 Movie Mode
+  - Servo → 90°
+  - RGB Strip → Purple
+  - Low Brightness
+
+- 🚨 Alert Mode
+  - RGB Strip → Red
+  - Maximum Brightness
+  - Alert LED → ON
+
 ## Architecture
 
 ```text
