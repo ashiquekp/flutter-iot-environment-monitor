@@ -22,4 +22,8 @@ constexpr int ALERT_LED_PIN = D2;
 
 constexpr int SERVO_PIN = D1;
 
+constexpr int RGB_PIN = D5;
+
+constexpr int RGB_LED_COUNT = 8;
+
 #endif
