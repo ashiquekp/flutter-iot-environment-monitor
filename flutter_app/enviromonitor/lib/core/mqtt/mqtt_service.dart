@@ -97,6 +97,27 @@ class MqttService {
     client.publishMessage(commandTopic, MqttQos.atLeastOnce, builder.payload!);
   }
 
+  void setRgbColor({
+    required int r,
+    required int g,
+    required int b,
+    required int brightness,
+  }) {
+    final payload = jsonEncode({
+      'command': 'rgb',
+      'r': r,
+      'g': g,
+      'b': b,
+      'brightness': brightness,
+    });
+
+    final builder = MqttClientPayloadBuilder();
+
+    builder.addString(payload);
+
+    client.publishMessage(commandTopic, MqttQos.atLeastOnce, builder.payload!);
+  }
+
   void _publishCommand(String command) {
     final payload = jsonEncode({'command': command});
 

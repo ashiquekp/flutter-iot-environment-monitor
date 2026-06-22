@@ -2,6 +2,7 @@
 #include "wifi_manager.h"
 #include "mqtt_manager.h"
 #include "servo_manager.h"
+#include "rgb_manager.h"
 #include "config.h"
 
 unsigned long lastPublishTime = 0;
@@ -21,6 +22,15 @@ void setup() {
   );
 
   initServo();
+
+  initRgb();
+
+  setRgbColor(
+    255,
+    0,
+    0,
+    50
+  );
 
   initSensor();
 

@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include "servo_manager.h"
+#include "rgb_manager.h"
 
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
@@ -88,6 +89,128 @@ void mqttCallback(
         angle
       );
     }
+  }
+
+  else if (
+    message.indexOf("\"command\":\"rgb\"") >= 0
+  ) {
+
+    int r = 255;
+    int g = 255;
+    int b = 255;
+    int brightness = 100;
+
+    int rIndex =
+      message.indexOf("\"r\":");
+
+    int gIndex =
+      message.indexOf("\"g\":");
+
+    int bIndex =
+      message.indexOf("\"b\":");
+
+    int brightnessIndex =
+      message.indexOf("\"brightness\":");
+
+    if (rIndex >= 0) {
+
+      String value =
+        message.substring(
+          rIndex + 4
+        );
+
+      int comma =
+        value.indexOf(",");
+
+      if (comma >= 0) {
+        value =
+          value.substring(
+            0,
+            comma
+          );
+      }
+
+      r = value.toInt();
+    }
+
+    if (gIndex >= 0) {
+
+      String value =
+        message.substring(
+          gIndex + 4
+        );
+
+      int comma =
+        value.indexOf(",");
+
+      if (comma >= 0) {
+        value =
+          value.substring(
+            0,
+            comma
+          );
+      }
+
+      g = value.toInt();
+    }
+
+    if (bIndex >= 0) {
+
+      String value =
+        message.substring(
+          bIndex + 4
+        );
+
+      int comma =
+        value.indexOf(",");
+
+      if (comma >= 0) {
+        value =
+          value.substring(
+            0,
+            comma
+          );
+      }
+
+      b = value.toInt();
+    }
+
+    if (
+      brightnessIndex >= 0
+    ) {
+
+      String value =
+        message.substring(
+          brightnessIndex + 13
+        );
+
+      value.replace(
+        "}",
+        ""
+      );
+
+      brightness =
+        value.toInt();
+    }
+
+    setRgbColor(
+      r,
+      g,
+      b,
+      brightness
+    );
+
+    Serial.print("R=");
+    Serial.print(r);
+
+    Serial.print(" G=");
+    Serial.print(g);
+
+    Serial.print(" B=");
+    Serial.print(b);
+
+    Serial.print(" Brightness=");
+    Serial.println(brightness);
   }
 }
 
