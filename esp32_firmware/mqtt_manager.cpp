@@ -212,6 +212,115 @@ void mqttCallback(
     Serial.print(" Brightness=");
     Serial.println(brightness);
   }
+
+  else if (
+    message.indexOf(
+      "\"command\":\"scene\""
+    ) >= 0
+  ) {
+
+    if (
+      message.indexOf(
+        "\"scene\":\"day\""
+      ) >= 0
+    ) {
+
+      setServoAngle(0);
+
+      setRgbColor(
+        255,
+        255,
+        255,
+        255
+      );
+
+      digitalWrite(
+        ALERT_LED_PIN,
+        LOW
+      );
+
+      Serial.println(
+        "DAY MODE"
+      );
+    }
+
+    else if (
+      message.indexOf(
+        "\"scene\":\"night\""
+      ) >= 0
+    ) {
+
+      setServoAngle(
+        180
+      );
+
+      setRgbColor(
+        255,
+        140,
+        0,
+        50
+      );
+
+      digitalWrite(
+        ALERT_LED_PIN,
+        LOW
+      );
+
+      Serial.println(
+        "NIGHT MODE"
+      );
+    }
+
+    else if (
+      message.indexOf(
+        "\"scene\":\"movie\""
+      ) >= 0
+    ) {
+
+      setServoAngle(
+        90
+      );
+
+      setRgbColor(
+        128,
+        0,
+        255,
+        30
+      );
+
+      digitalWrite(
+        ALERT_LED_PIN,
+        LOW
+      );
+
+      Serial.println(
+        "MOVIE MODE"
+      );
+    }
+
+    else if (
+      message.indexOf(
+        "\"scene\":\"alert\""
+      ) >= 0
+    ) {
+
+      setRgbColor(
+        255,
+        0,
+        0,
+        255
+      );
+
+      digitalWrite(
+        ALERT_LED_PIN,
+        HIGH
+      );
+
+      Serial.println(
+        "ALERT MODE"
+      );
+    }
+  }
 }
 
 void reconnectMQTT() {

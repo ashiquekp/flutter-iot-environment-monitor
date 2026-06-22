@@ -283,6 +283,52 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                     const SizedBox(height: 24),
 
                     const Text(
+                      'Smart Scenes',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            mqttService.activateScene('day');
+                          },
+                          child: const Text('☀️ Day'),
+                        ),
+
+                        ElevatedButton(
+                          onPressed: () {
+                            mqttService.activateScene('night');
+                          },
+                          child: const Text('🌙 Night'),
+                        ),
+
+                        ElevatedButton(
+                          onPressed: () {
+                            mqttService.activateScene('movie');
+                          },
+                          child: const Text('🎬 Movie'),
+                        ),
+
+                        ElevatedButton(
+                          onPressed: () {
+                            mqttService.activateScene('alert');
+                          },
+                          child: const Text('🚨 Alert'),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    const Text(
                       'Temperature Trend',
                       style: TextStyle(
                         fontSize: 18,

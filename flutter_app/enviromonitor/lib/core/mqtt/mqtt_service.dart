@@ -35,7 +35,9 @@ class MqttService {
     );
 
     client.port = 1883;
+
     client.keepAlivePeriod = 30;
+
     client.logging(on: false);
 
     await client.connect();
@@ -66,9 +68,7 @@ class MqttService {
           } else if (topic == statusTopic) {
             statusController.add(DeviceStatusMessage.fromJson(jsonMap));
           }
-        } catch (e) {
-          print('MQTT Parse Error: $e');
-        }
+        } catch (_) {}
       }
     });
 
@@ -110,6 +110,16 @@ class MqttService {
       'b': b,
       'brightness': brightness,
     });
+
+    final builder = MqttClientPayloadBuilder();
+
+    builder.addString(payload);
+
+    client.publishMessage(commandTopic, MqttQos.atLeastOnce, builder.payload!);
+  }
+
+  void activateScene(String scene) {
+    final payload = jsonEncode({'command': 'scene', 'scene': scene});
 
     final builder = MqttClientPayloadBuilder();
 
