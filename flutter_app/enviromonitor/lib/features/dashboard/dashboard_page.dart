@@ -22,6 +22,11 @@ class DashboardPage extends ConsumerStatefulWidget {
 class _DashboardPageState extends ConsumerState<DashboardPage> {
   double servoAngle = 90;
 
+  double red = 255;
+  double green = 0;
+  double blue = 0;
+  double brightness = 100;
+
   @override
   Widget build(BuildContext context) {
     ref.watch(telemetryControllerProvider);
@@ -69,9 +74,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                       title: 'Device Status',
                       value: switch (deviceStatus) {
                         DeviceStatus.online => '🟢 Online',
-
                         DeviceStatus.offline => '🔴 Offline',
-
                         DeviceStatus.unknown => '⚪ Unknown',
                       },
                     ),
@@ -163,6 +166,117 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         });
 
                         mqttService.setServoAngle(value.round());
+                      },
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    const Text(
+                      'RGB Strip Control',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Container(
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Color.fromRGBO(
+                          red.round(),
+                          green.round(),
+                          blue.round(),
+                          1,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    Text('Red: ${red.round()}'),
+
+                    Slider(
+                      value: red,
+                      min: 0,
+                      max: 255,
+                      divisions: 255,
+                      onChanged: (value) {
+                        setState(() {
+                          red = value;
+                        });
+
+                        mqttService.setRgbColor(
+                          r: red.round(),
+                          g: green.round(),
+                          b: blue.round(),
+                          brightness: brightness.round(),
+                        );
+                      },
+                    ),
+
+                    Text('Green: ${green.round()}'),
+
+                    Slider(
+                      value: green,
+                      min: 0,
+                      max: 255,
+                      divisions: 255,
+                      onChanged: (value) {
+                        setState(() {
+                          green = value;
+                        });
+
+                        mqttService.setRgbColor(
+                          r: red.round(),
+                          g: green.round(),
+                          b: blue.round(),
+                          brightness: brightness.round(),
+                        );
+                      },
+                    ),
+
+                    Text('Blue: ${blue.round()}'),
+
+                    Slider(
+                      value: blue,
+                      min: 0,
+                      max: 255,
+                      divisions: 255,
+                      onChanged: (value) {
+                        setState(() {
+                          blue = value;
+                        });
+
+                        mqttService.setRgbColor(
+                          r: red.round(),
+                          g: green.round(),
+                          b: blue.round(),
+                          brightness: brightness.round(),
+                        );
+                      },
+                    ),
+
+                    Text('Brightness: ${brightness.round()}'),
+
+                    Slider(
+                      value: brightness,
+                      min: 0,
+                      max: 255,
+                      divisions: 255,
+                      onChanged: (value) {
+                        setState(() {
+                          brightness = value;
+                        });
+
+                        mqttService.setRgbColor(
+                          r: red.round(),
+                          g: green.round(),
+                          b: blue.round(),
+                          brightness: brightness.round(),
+                        );
                       },
                     ),
 
