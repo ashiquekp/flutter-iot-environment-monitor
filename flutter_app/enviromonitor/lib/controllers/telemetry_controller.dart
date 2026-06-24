@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../core/notifications/notification_service.dart';
 import '../providers/alert_provider.dart';
 import '../providers/device_status_provider.dart';
 import '../providers/history_provider.dart';
@@ -19,11 +21,17 @@ final telemetryControllerProvider = Provider<void>((ref) {
         ref.read(deviceStatusProvider.notifier).setOnline();
       } else {
         ref.read(deviceStatusProvider.notifier).setOffline();
+
+        NotificationService.show(
+          title: '🔴 Device Offline',
+          body: 'ESP32 disconnected',
+        );
       }
     });
 
     ref.onDispose(() {
       telemetrySub.cancel();
+
       statusSub.cancel();
     });
   });
