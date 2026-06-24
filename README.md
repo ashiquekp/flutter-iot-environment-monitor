@@ -144,6 +144,7 @@ Day 15:
 - Brightness control
 
 Day 16:
+
 The Flutter app can trigger predefined IoT scenes through MQTT where available scenes are:
 - ☀️ Day Mode
   - Servo → 0°
@@ -164,6 +165,14 @@ The Flutter app can trigger predefined IoT scenes through MQTT where available s
   - RGB Strip → Red
   - Maximum Brightness
   - Alert LED → ON
+
+Day 17:
+
+The application sends local notifications when:
+
+- Temperature exceeds threshold
+- Humidity exceeds threshold
+- ESP32 device goes offline
 
 ## Architecture
 
