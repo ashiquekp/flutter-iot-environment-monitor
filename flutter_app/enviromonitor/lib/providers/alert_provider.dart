@@ -8,13 +8,18 @@ import '../models/sensor_reading.dart';
 class AlertNotifier extends StateNotifier<List<EnvironmentAlert>> {
   AlertNotifier() : super([]);
 
-  static const maxTemperature = 35.0;
+  double maxTemperature = 35;
 
-  static const maxHumidity = 80.0;
+  double maxHumidity = 80;
 
-  bool _temperatureAlertSent = false;
+  void updateThresholds({
+    required double temperature,
+    required double humidity,
+  }) {
+    maxTemperature = temperature;
 
-  bool _humidityAlertSent = false;
+    maxHumidity = humidity;
+  }
 
   void evaluate(SensorReading reading) {
     final alerts = <EnvironmentAlert>[];
@@ -23,44 +28,34 @@ class AlertNotifier extends StateNotifier<List<EnvironmentAlert>> {
       alerts.add(
         EnvironmentAlert(
           title: 'High Temperature',
-          message: 'Temperature exceeded 35°C',
+          message: 'Temperature exceeded ${maxTemperature.round()}°C',
           level: AlertLevel.warning,
           createdAt: DateTime.now(),
         ),
       );
 
-      if (!_temperatureAlertSent) {
-        _temperatureAlertSent = true;
-
-        NotificationService.show(
-          title: '⚠ Temperature Alert',
-          body: '${reading.temperature.toStringAsFixed(1)} °C',
-        );
-      }
-    } else {
-      _temperatureAlertSent = false;
+      NotificationService.show(
+        title: '⚠️ High Temperature',
+        body:
+            '${reading.temperature.toStringAsFixed(1)}°C exceeds threshold of ${maxTemperature.round()}°C',
+      );
     }
 
     if (reading.humidity > maxHumidity) {
       alerts.add(
         EnvironmentAlert(
           title: 'High Humidity',
-          message: 'Humidity exceeded 80%',
+          message: 'Humidity exceeded ${maxHumidity.round()}%',
           level: AlertLevel.warning,
           createdAt: DateTime.now(),
         ),
       );
 
-      if (!_humidityAlertSent) {
-        _humidityAlertSent = true;
-
-        NotificationService.show(
-          title: '⚠ Humidity Alert',
-          body: '${reading.humidity.toStringAsFixed(1)} %',
-        );
-      }
-    } else {
-      _humidityAlertSent = false;
+      NotificationService.show(
+        title: '💧 High Humidity',
+        body:
+            '${reading.humidity.toStringAsFixed(1)}% exceeds threshold of ${maxHumidity.round()}%',
+      );
     }
 
     state = alerts;

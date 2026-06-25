@@ -8,6 +8,7 @@ import '../../../providers/alert_provider.dart';
 import '../../../providers/device_status_provider.dart';
 import '../../../providers/history_provider.dart';
 import '../../../providers/mqtt_provider.dart';
+import '../settings/settings_page.dart';
 import 'widgets/humidity_chart.dart';
 import 'widgets/info_card.dart';
 import 'widgets/temperature_chart.dart';
@@ -40,7 +41,21 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     final deviceStatus = ref.watch(deviceStatusProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('EnviroMonitor'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('EnviroMonitor'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsPage()),
+              );
+            },
+          ),
+        ],
+      ),
       body: mqttAsync.when(
         data: (mqttService) {
           return StreamBuilder(
