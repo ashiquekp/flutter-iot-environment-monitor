@@ -174,6 +174,16 @@ The application sends local notifications when:
 - Humidity exceeds threshold
 - ESP32 device goes offline
 
+Day 18:
+- Local push notifications using flutter_local_notifications
+- Runtime notification permission request (Android 13+)
+- User configurable temperature threshold
+- User configurable humidity threshold
+- Settings screen for alert configuration
+- Persistent alert threshold management using Riverpod
+- Automatic high temperature alerts
+- Automatic high humidity alerts
+
 ## Architecture
 
 ```text
