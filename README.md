@@ -189,6 +189,20 @@ Day 19:
 - Implemented telemetry CSV export
 - Added native Android share support for exported telemetry
 
+Day 20:
+- Added CSV export for telemetry history.
+- Implemented reusable StatisticsService.
+- Added Statistics dashboard (average, min, max values).
+- Improved project structure by separating business logic from UI.
+
+Day 21:
+- Refactored DashboardPage into reusable widgets.
+- Extracted Device Status and Alerts section.
+- Extracted LED and Servo control widgets.
+- Extracted RGB Strip and Smart Scene widgets.
+- Extracted Statistics, Charts, and History widgets.
+- Improved maintainability and code readability.
+
 ## Architecture
 
 ```text
