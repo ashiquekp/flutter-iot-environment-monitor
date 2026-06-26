@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../controllers/telemetry_controller.dart';
 import '../../../core/services/csv_export_service.dart';
-import '../../../core/utils/date_formatter.dart';
 import '../../../providers/alert_provider.dart';
 import '../../../providers/device_status_provider.dart';
 import '../../../providers/history_provider.dart';
@@ -11,14 +10,14 @@ import '../../../providers/mqtt_provider.dart';
 import '../../core/services/statistics_service.dart';
 import '../settings/settings_page.dart';
 import 'widgets/alert_section.dart';
+import 'widgets/charts_section.dart';
 import 'widgets/device_status_section.dart';
-import 'widgets/humidity_chart.dart';
 import 'widgets/led_control_card.dart';
+import 'widgets/recent_readings_section.dart';
 import 'widgets/rgb_control_card.dart';
 import 'widgets/servo_control_card.dart';
 import 'widgets/smart_scenes_card.dart';
-import 'widgets/statistics_card.dart';
-import 'widgets/temperature_chart.dart';
+import 'widgets/statistics_section.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
@@ -217,101 +216,22 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
                     const SizedBox(height: 24),
 
-                    const Text(
-                      'Statistics',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    StatisticsCard(
-                      title: 'Average Temperature',
-                      value: '${averageTemperature.toStringAsFixed(1)} °C',
-                      icon: Icons.thermostat,
-                    ),
-
-                    StatisticsCard(
-                      title: 'Average Humidity',
-                      value: '${averageHumidity.toStringAsFixed(1)} %',
-                      icon: Icons.water_drop,
-                    ),
-
-                    StatisticsCard(
-                      title: 'Highest Temperature',
-                      value: '${maxTemperature.toStringAsFixed(1)} °C',
-                      icon: Icons.arrow_upward,
-                    ),
-
-                    StatisticsCard(
-                      title: 'Lowest Temperature',
-                      value: '${minTemperature.toStringAsFixed(1)} °C',
-                      icon: Icons.arrow_downward,
-                    ),
-
-                    StatisticsCard(
-                      title: 'Highest Humidity',
-                      value: '${maxHumidity.toStringAsFixed(1)} %',
-                      icon: Icons.trending_up,
-                    ),
-
-                    StatisticsCard(
-                      title: 'Lowest Humidity',
-                      value: '${minHumidity.toStringAsFixed(1)} %',
-                      icon: Icons.trending_down,
+                    StatisticsSection(
+                      averageTemperature: averageTemperature,
+                      averageHumidity: averageHumidity,
+                      maxTemperature: maxTemperature,
+                      minTemperature: minTemperature,
+                      maxHumidity: maxHumidity,
+                      minHumidity: minHumidity,
                     ),
 
                     const SizedBox(height: 24),
 
-                    const Text(
-                      'Temperature Trend',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    TemperatureChart(history: history.reversed.toList()),
+                    ChartsSection(history: history),
 
                     const SizedBox(height: 24),
 
-                    const Text(
-                      'Humidity Trend',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    HumidityChart(history: history.reversed.toList()),
-
-                    const SizedBox(height: 24),
-
-                    const Text(
-                      'Recent Readings',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    ...history.map(
-                      (reading) => Card(
-                        child: ListTile(
-                          title: Text(
-                            '${reading.temperature.toStringAsFixed(1)} °C',
-                          ),
-                          subtitle: Text(
-                            '${reading.humidity.toStringAsFixed(1)} %',
-                          ),
-                          trailing: Text(formatTime(reading.receivedAt)),
-                        ),
-                      ),
-                    ),
+                    RecentReadingsSection(history: history),
                   ],
                 ),
               );
