@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../controllers/telemetry_controller.dart';
+import '../../../core/services/csv_export_service.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../models/device_status.dart';
 import '../../../providers/alert_provider.dart';
@@ -45,6 +46,26 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
         title: const Text('EnviroMonitor'),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.download),
+            tooltip: 'Export CSV',
+            onPressed: () async {
+              if (history.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('No telemetry data available.')),
+                );
+                return;
+              }
+
+              await CsvExportService.exportAndShare(history);
+
+              if (!context.mounted) return;
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('CSV exported successfully.')),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
@@ -133,9 +154,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                             child: const Text('Turn ON'),
                           ),
                         ),
-
                         const SizedBox(width: 12),
-
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
@@ -157,8 +176,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                       ),
                     ),
 
-                    const SizedBox(height: 12),
-
                     Center(
                       child: Text(
                         '${servoAngle.round()}°',
@@ -174,7 +191,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                       min: 0,
                       max: 180,
                       divisions: 180,
-                      label: servoAngle.round().toString(),
                       onChanged: (value) {
                         setState(() {
                           servoAngle = value;
@@ -193,8 +209,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
-                    const SizedBox(height: 12),
 
                     Container(
                       height: 80,
@@ -317,21 +331,18 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                           },
                           child: const Text('☀️ Day'),
                         ),
-
                         ElevatedButton(
                           onPressed: () {
                             mqttService.activateScene('night');
                           },
                           child: const Text('🌙 Night'),
                         ),
-
                         ElevatedButton(
                           onPressed: () {
                             mqttService.activateScene('movie');
                           },
                           child: const Text('🎬 Movie'),
                         ),
-
                         ElevatedButton(
                           onPressed: () {
                             mqttService.activateScene('alert');
