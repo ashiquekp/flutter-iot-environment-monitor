@@ -14,7 +14,9 @@ import 'widgets/alert_section.dart';
 import 'widgets/device_status_section.dart';
 import 'widgets/humidity_chart.dart';
 import 'widgets/led_control_card.dart';
+import 'widgets/rgb_control_card.dart';
 import 'widgets/servo_control_card.dart';
+import 'widgets/smart_scenes_card.dart';
 import 'widgets/statistics_card.dart';
 import 'widgets/temperature_chart.dart';
 
@@ -145,37 +147,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
                     const SizedBox(height: 24),
 
-                    const Text(
-                      'RGB Strip Control',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    RgbControlCard(
+                      red: red,
+                      green: green,
+                      blue: blue,
+                      brightness: brightness,
 
-                    Container(
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Color.fromRGBO(
-                          red.round(),
-                          green.round(),
-                          blue.round(),
-                          1,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    Text('Red: ${red.round()}'),
-
-                    Slider(
-                      value: red,
-                      min: 0,
-                      max: 255,
-                      divisions: 255,
-                      onChanged: (value) {
+                      onRedChanged: (value) {
                         setState(() {
                           red = value;
                         });
@@ -187,16 +165,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                           brightness: brightness.round(),
                         );
                       },
-                    ),
 
-                    Text('Green: ${green.round()}'),
-
-                    Slider(
-                      value: green,
-                      min: 0,
-                      max: 255,
-                      divisions: 255,
-                      onChanged: (value) {
+                      onGreenChanged: (value) {
                         setState(() {
                           green = value;
                         });
@@ -208,16 +178,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                           brightness: brightness.round(),
                         );
                       },
-                    ),
 
-                    Text('Blue: ${blue.round()}'),
-
-                    Slider(
-                      value: blue,
-                      min: 0,
-                      max: 255,
-                      divisions: 255,
-                      onChanged: (value) {
+                      onBlueChanged: (value) {
                         setState(() {
                           blue = value;
                         });
@@ -229,16 +191,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                           brightness: brightness.round(),
                         );
                       },
-                    ),
 
-                    Text('Brightness: ${brightness.round()}'),
-
-                    Slider(
-                      value: brightness,
-                      min: 0,
-                      max: 255,
-                      divisions: 255,
-                      onChanged: (value) {
+                      onBrightnessChanged: (value) {
                         setState(() {
                           brightness = value;
                         });
@@ -254,45 +208,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
                     const SizedBox(height: 24),
 
-                    const Text(
-                      'Smart Scenes',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            mqttService.activateScene('day');
-                          },
-                          child: const Text('☀️ Day'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            mqttService.activateScene('night');
-                          },
-                          child: const Text('🌙 Night'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            mqttService.activateScene('movie');
-                          },
-                          child: const Text('🎬 Movie'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            mqttService.activateScene('alert');
-                          },
-                          child: const Text('🚨 Alert'),
-                        ),
-                      ],
+                    SmartScenesCard(
+                      onDay: () => mqttService.activateScene('day'),
+                      onNight: () => mqttService.activateScene('night'),
+                      onMovie: () => mqttService.activateScene('movie'),
+                      onAlert: () => mqttService.activateScene('alert'),
                     ),
 
                     const SizedBox(height: 24),
