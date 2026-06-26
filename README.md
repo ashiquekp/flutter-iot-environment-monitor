@@ -184,6 +184,11 @@ Day 18:
 - Automatic high temperature alerts
 - Automatic high humidity alerts
 
+Day 19:
+- Added Smart Scene controls (Day, Night, Movie, Alert)
+- Implemented telemetry CSV export
+- Added native Android share support for exported telemetry
+
 ## Architecture
 
 ```text
