@@ -4,14 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../controllers/telemetry_controller.dart';
 import '../../../core/services/csv_export_service.dart';
 import '../../../core/utils/date_formatter.dart';
-import '../../../models/device_status.dart';
 import '../../../providers/alert_provider.dart';
 import '../../../providers/device_status_provider.dart';
 import '../../../providers/history_provider.dart';
 import '../../../providers/mqtt_provider.dart';
+import '../../core/services/statistics_service.dart';
 import '../settings/settings_page.dart';
+import 'widgets/alert_section.dart';
+import 'widgets/device_status_section.dart';
 import 'widgets/humidity_chart.dart';
-import 'widgets/info_card.dart';
+import 'widgets/led_control_card.dart';
+import 'widgets/servo_control_card.dart';
+import 'widgets/statistics_card.dart';
 import 'widgets/temperature_chart.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
@@ -88,109 +92,48 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
               final latest = history.first;
 
+              final averageTemperature = StatisticsService.averageTemperature(
+                history,
+              );
+
+              final averageHumidity = StatisticsService.averageHumidity(
+                history,
+              );
+
+              final maxTemperature = StatisticsService.maxTemperature(history);
+
+              final minTemperature = StatisticsService.minTemperature(history);
+
+              final maxHumidity = StatisticsService.maxHumidity(history);
+
+              final minHumidity = StatisticsService.minHumidity(history);
+
               return RefreshIndicator(
                 onRefresh: () async {},
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
-                    if (alerts.isNotEmpty)
-                      ...alerts.map(
-                        (alert) => Card(
-                          child: ListTile(
-                            leading: const Icon(Icons.warning),
-                            title: Text(alert.title),
-                            subtitle: Text(alert.message),
-                          ),
-                        ),
-                      ),
+                    AlertSection(alerts: alerts),
 
-                    InfoCard(title: 'Device ID', value: latest.deviceId),
-
-                    InfoCard(
-                      title: 'Device Status',
-                      value: switch (deviceStatus) {
-                        DeviceStatus.online => '🟢 Online',
-                        DeviceStatus.offline => '🔴 Offline',
-                        DeviceStatus.unknown => '⚪ Unknown',
-                      },
-                    ),
-
-                    InfoCard(
-                      title: 'Temperature',
-                      value: '${latest.temperature.toStringAsFixed(1)} °C',
-                    ),
-
-                    InfoCard(
-                      title: 'Humidity',
-                      value: '${latest.humidity.toStringAsFixed(1)} %',
-                    ),
-
-                    const InfoCard(title: 'MQTT Status', value: 'Connected'),
-
-                    InfoCard(
-                      title: 'Last Updated',
-                      value: formatTime(latest.receivedAt),
+                    DeviceStatusSection(
+                      deviceId: latest.deviceId,
+                      deviceStatus: deviceStatus,
+                      temperature: latest.temperature,
+                      humidity: latest.humidity,
+                      receivedAt: latest.receivedAt,
                     ),
 
                     const SizedBox(height: 24),
 
-                    const Text(
-                      'LED Control',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              mqttService.turnLedOn();
-                            },
-                            child: const Text('Turn ON'),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              mqttService.turnLedOff();
-                            },
-                            child: const Text('Turn OFF'),
-                          ),
-                        ),
-                      ],
+                    LedControlCard(
+                      onTurnOn: mqttService.turnLedOn,
+                      onTurnOff: mqttService.turnLedOff,
                     ),
 
                     const SizedBox(height: 24),
 
-                    const Text(
-                      'Servo Control',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    Center(
-                      child: Text(
-                        '${servoAngle.round()}°',
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                    Slider(
-                      value: servoAngle,
-                      min: 0,
-                      max: 180,
-                      divisions: 180,
+                    ServoControlCard(
+                      angle: servoAngle,
                       onChanged: (value) {
                         setState(() {
                           servoAngle = value;
@@ -350,6 +293,54 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                           child: const Text('🚨 Alert'),
                         ),
                       ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    const Text(
+                      'Statistics',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    StatisticsCard(
+                      title: 'Average Temperature',
+                      value: '${averageTemperature.toStringAsFixed(1)} °C',
+                      icon: Icons.thermostat,
+                    ),
+
+                    StatisticsCard(
+                      title: 'Average Humidity',
+                      value: '${averageHumidity.toStringAsFixed(1)} %',
+                      icon: Icons.water_drop,
+                    ),
+
+                    StatisticsCard(
+                      title: 'Highest Temperature',
+                      value: '${maxTemperature.toStringAsFixed(1)} °C',
+                      icon: Icons.arrow_upward,
+                    ),
+
+                    StatisticsCard(
+                      title: 'Lowest Temperature',
+                      value: '${minTemperature.toStringAsFixed(1)} °C',
+                      icon: Icons.arrow_downward,
+                    ),
+
+                    StatisticsCard(
+                      title: 'Highest Humidity',
+                      value: '${maxHumidity.toStringAsFixed(1)} %',
+                      icon: Icons.trending_up,
+                    ),
+
+                    StatisticsCard(
+                      title: 'Lowest Humidity',
+                      value: '${minHumidity.toStringAsFixed(1)} %',
+                      icon: Icons.trending_down,
                     ),
 
                     const SizedBox(height: 24),
