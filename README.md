@@ -42,6 +42,18 @@ Architecture:
 - Flutter Dashboard
 - Device Status Tracking
 
+
+## 📸 Screenshots
+
+### Dashboard
+
+<img src="screenshots/dashboard.jpeg" width="300"/>
+
+### Settings
+
+<img src="screenshots/settings.jpeg" width="300"/>
+
+
 ## Project Status
 
 Day 1:
